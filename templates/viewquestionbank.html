@@ -1,0 +1,60 @@
+<html>
+    <head>
+        <title>Question Bank</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    </head>
+    <body>
+        <div id="header">
+            <div class="container">
+                <a id="header-title" href="/">Online Exam</a>
+                <h1>QUESTION BANK</h1>
+                <a href="#" id = "logout"> Log Out </a>
+            </div>
+        </div>
+        {%  if questionLists|length < 1 %}
+        <h4 style="text-align: center">There are no questions</h4>
+        {%  else %}
+        <table id = "table">
+            <tr>
+                <th>Serial No.</th>
+                <th>Question</th>
+                <th>Keywords</th>
+                <th>Key-sentences</th>
+                <th>Marks</th>
+                <th>Difficulty</th>
+                <th>Topic</th>
+                <th>Subject</th>
+            </tr>
+                {% set n = 0 %}
+                {% for question in questionLists %}
+            <tr>
+                {% set n = n + 1 %}
+                <td>{{ loop.index }}</td>
+                <td>{{ question[1] }}</td>
+                <td>{{ question[2] }}</td>
+                <td>{{ question[3] }}</td>
+                <td>{{ question[4] }}</td>
+                <td>{{ question[5] }}</td>
+                <td>{{ question[6] }}</td>
+                <td>{{ question[7] }}</td>
+            </tr>
+                {% endfor %}
+        </table>
+        {%  endif %}
+
+        <div class="form">
+            <form action="/back/{{id}}" method="POST">
+                <input class = button type="submit" value="Go Back">
+            </form>
+        </div>
+        <div id="footer">
+        </div>
+        {% with messages = get_flashed_messages() %}  
+         {% if messages %}  
+               {% for message in messages %}  
+                    <p>{{ message }}</p>  
+               {% endfor %}  
+         {% endif %}  
+        {% endwith %}  
+    </body>
+</html>

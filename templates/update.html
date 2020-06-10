@@ -1,0 +1,81 @@
+{% from "_formhelpers.html" import render_field %}
+<html>
+    <head>
+        <title>Update Question</title>
+        <link rel="stylesheet" type = text/css href="{{ url_for('static', filename='css/style2.css') }}">    
+    </head>
+    <body>
+        <div id = "heading">
+            <h2> Update Question</h2>
+        </div>
+        <dl>
+            {{ form.csrf_token }}
+        </dl>
+        <div id = "qform">
+            <form action = "/update/{{id}}" method="post">
+                {{ form.hidden_tag() }}
+                <div>
+                    <div id="question" class = "form-element">
+                        <span class="label">  {{ form.question.label }} </span> <br>
+                        {{ form.question}}
+                        {{ render_field(form.question) }}
+                    </div>
+                    <br>
+                    <div class = valign>
+                        <div id="keywords" class = "form-element">
+                            <span class="label"> {{ form.keywords.label }} </span> <br>
+                            {{ form.keywords}}
+                            {{ render_field(form.keywords) }}
+                        </div>
+                        <br>
+                        <div id="keySentences" class = "form-element">
+                            <span class="label"> {{ form.keySentences.label }} </span> <br>
+                            {{ form.keySentences}}
+                            {{ render_field(form.keySentences) }}
+                        </div>
+                    </div>
+                    <br>
+                    <div class = valign>
+                        <div id="topic" class = "form-element">
+                            <span class="label">{{ form.topic.label }}</span> <br>
+                            {{ form.topic}}
+                            {{ render_field(form.topic) }}
+                        </div>
+                        <br>
+                        <div id="difficulty" class = "form-element">
+                            <span class="label">{{ form.difficulty.label }}</span> <br>
+                            {{ form.difficulty}}
+                            {{ render_field(form.difficulty) }}
+                        </div>
+                    </div>
+                    <br>
+                    <div class = valign>
+                        <div id="marks" class = "form-element">
+                            <span class="label">{{ form.marks.label }}</span> <br>
+                            {{ form.marks}}
+                            {{ render_field(form.marks) }}
+                        </div>
+                        <br>
+                        <div id="subject" class = "form-element">
+                            <span class="label">{{ form.subject.label }}</span> <br>
+                            {{ form.subject}}
+                            {{ render_field(form.subject) }}
+                        </div>
+                    </div>
+                    <br>
+                    <div id="submit" class = "form-element">
+                        {{ form.submit}}
+                    </div>
+                    <br>
+                </div>
+            </form>
+        </div>
+        {% with messages = get_flashed_messages() %}  
+         {% if messages %}  
+               {% for message in messages %}  
+                    <p>{{ message }}</p>  
+               {% endfor %}  
+         {% endif %}  
+        {% endwith %}  
+    </body>
+</html>

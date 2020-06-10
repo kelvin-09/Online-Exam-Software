@@ -1,0 +1,125 @@
+#heading{
+    /*background-color: blue;*/
+    text-align: center;
+    height: 80px;
+    padding: 5px 5px 5px 5px;
+    margin: 0px auto;
+    width: 810px;
+    box-sizing: border-box;
+    margin-bottom: 0px;
+    text-transform: uppercase;
+}
+
+
+h2{
+    margin-bottom: 0px;
+    letter-spacing: 2px;
+    font-size: 30px;
+    padding-bottom: 5px;
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
+body{
+    font-size: large;
+    /*background-color: pink;*/
+}
+
+.form-element{
+    /*background-color: red;*/
+    margin: 30px;
+}
+
+#question{
+    height: 150px;
+    width: 600px;
+    flex-basis: 300px;
+    /*background-color: bisque;*/
+    margin: auto;
+}
+
+.valign{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+#keywords, #keySentences{
+    height: 80px;
+    width: 350px;
+    
+}
+
+#topic, #difficulty, #marks, #subject{
+    height: 30px;
+    width: 200px;   
+}
+
+#submit{
+    text-align: center;
+}
+
+.label{
+    font-weight: bold;
+    color: brown;
+    margin: 0;
+}
+
+form{
+	font-family: 'Open Sans Condensed', arial, sans;
+	width: 750px;
+	padding: 30px;
+	background: #FFFFFF;
+	margin: 50px auto;
+	box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.22);
+	-moz-box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.22);
+	-webkit-box-shadow:  0px 0px 15px rgba(0, 0, 0, 0.22);
+    background-color: #f2f2f2;
+    margin-top: 0px;
+}
+
+input[type=text] {
+    border: 3px solid #ccc;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+    outline: none;
+}
+  
+input[type=text]:focus {
+    border: 3px solid #555;
+}
+
+textarea {
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    font-size: 16px;
+    resize: none;
+}
+
+select {
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background-color: #f1f1f1;
+}
+
+input[type=submit] {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+dl{
+    margin: 0px;
+}
+
+p{
+    text-align: center;
+    margin: auto;
+}
+  

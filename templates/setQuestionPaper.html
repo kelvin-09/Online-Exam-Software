@@ -1,0 +1,69 @@
+<html>
+    <head>
+        <title>Set Question Paper</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    </head>
+    <body>
+        <div id="header">
+            <div class="container">
+                <a id="header-title" href="/">Online Exam</a>
+                <h1>SET QUESTION PAPER</h1>
+                <a href="#" id = "logout"> Log Out </a>
+            </div>
+        </div>
+        <div id = "paperlist">
+            <ul class = "detail-list"></ul>
+            <li><span>Name:</span> {{ paperDetail[0][1] }}</li>
+            <li><span>Duration:</span> {{ paperDetail[0][2] }} minutes</li>
+            <li><span>Maximum Marks:</span> {{ marks }}</li>
+        </div>
+        {%  if questionDetailList|length < 1 %}
+        <h4 style="text-align: center">There are no questions. Create one below!</h4>
+        {%  else %}
+        <table id = "table">
+            <tr>
+                <th>Serial No.</th>
+                <th>Question</th>
+                <th>Marks</th>
+                <th>Difficulty</th>
+                <th>Topic</th>
+                <th>Subject</th>
+                <th>Remove</th>
+            </tr>
+            {% for question in questionDetailList %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ question[1] }}</td>
+                <td>{{ question[4] }}</td>
+                <td>{{ question[5] }}</td>
+                <td>{{ question[6] }}</td>
+                <td>{{ question[7] }}</td>
+                <td><a href="/remove/{{id}}/{{question[0]}}">Remove</a></td>
+            </tr>
+                {% endfor %}
+        </table>
+        {%  endif %}
+
+        <div class="form button-group">
+            <form action="/questionbank/view/{{id}}" method="POST">
+                <input class = "button" type="submit" value="View Question Bank">
+            </form>
+            <form action="/choose/{{id}}" method="POST">
+                <input class = "button" type="submit" value="Choose Question from question bank">
+            </form>
+            <form action="/random/{{id}}" method="POST">
+                <input class = "button" type="submit" value="Add a random question">
+            </form>
+        </div>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <h3>{{ message }}</h3>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div id="footer">
+        </div>
+    </body>
+</html>

@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <title>Choose Question</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    </head>
+    <body>
+        <div class="form">
+            <form action="/chooseQuestions/{{id}}" method="POST">
+            <div id="header">
+                <div class="container">
+                    <a id="header-title" href="/homepage">Online Exam</a>
+                    <h1>AVAILABLE QUESTIONS</h1>
+                    <a href="#" id = "logout"> Log Out </a>
+                </div>
+            </div>
+            {%  if questionLists|length < 1 %}
+            <h4 style="text-align: center">No available Questions!</h4>
+            {%  else %}
+            <table id = "table">
+                <tr>
+                    <th>Serial No.</th>
+                    <th>Question</th>
+                    <th>Keywords</th>
+                    <th>Key-sentences</th>
+                    <th>Marks</th>
+                    <th>Difficulty</th>
+                    <th>Topic</th>
+                    <th>Subject</th>
+                    <th>Select Question</th>
+                </tr>
+                    {% set n = 0 %}
+                    {% for question in questionLists %}
+                <tr>
+                    {% set n = n + 1 %}
+                    <td>{{ loop.index }}</td>
+                    <td>{{ question[1] }}</td>
+                    <td>{{ question[2] }}</td>
+                    <td>{{ question[3] }}</td>
+                    <td>{{ question[4] }}</td>
+                    <td>{{ question[5] }}</td>
+                    <td>{{ question[6] }}</td>
+                    <td>{{ question[7] }}</td>
+                    <td id = "checkbox-cell"><input type="checkbox" style="height: 30px;" name="{{question[0]}}" value="1"></td>
+                </tr>
+                    {% endfor %}    
+            </table>
+            {%  endif %}
+
+            
+               
+                    <input class = button type="submit" value="Submit">
+                </form>
+        </div>
+        <div id="footer">
+        </div>
+        {% with messages = get_flashed_messages() %}  
+         {% if messages %}  
+               {% for message in messages %}  
+                    <p>{{ message }}</p>  
+               {% endfor %}  
+         {% endif %}  
+        {% endwith %}  
+    </body>
+</html>
