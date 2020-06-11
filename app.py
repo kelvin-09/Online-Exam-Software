@@ -13,16 +13,7 @@ app.secret_key = 'Secret'
 @app.route('/createQuestion', methods = ['GET', 'POST'])
 def question():
     form = questionForm()
-    '''if request.method == 'POST':
-        if form.validate() == False:
-            flash("All fields are required")
-            return "Errata"
-            #return render_template('questionPage.html', form = form)
-        else:
-            return "success"
-            #return redirect(url_for('submit'))
-    return render_template('questionPage.html', form = form)'''
-    return render_template('questionpage.html', form = form)
+    return render_template('questionPage.html', form = form)
         
 @app.route('/submit')
 def submit():
@@ -48,7 +39,7 @@ def questionbank():
                 c.execute('''insert into question(question, keywords, keySentences, marks, difficulty, topic, subject) 
                 values(?, ?, ?, ?, ?, ?, ?)''', questionDetailTuple)
             except:
-                flash("Duplicate Questions will not be inserted")
+                flash("")
             c.execute("select * from question")
             conn.commit()
             questionLists = c.fetchall()
@@ -56,7 +47,7 @@ def questionbank():
             return render_template('qbpage.html', questionLists = questionLists)
         else:
             conn.close()
-            return render_template('questionpage.html', form = form)
+            return render_template('questionPage.html', form = form)
     else:
         c.execute("select * from question")
         questionLists = c.fetchall()
@@ -136,7 +127,7 @@ def questionpaper():
                 c.execute('''insert into questionPaper(name, duration, maxMarks) 
                 values(?, ?, ?)''', questionPaperTuple)
             except:
-                flash("An error occured please try again")
+                flash("")
             c.execute("select * from questionPaper")
             c.execute("select * from questionPaper")
             questionPaperLists = c.fetchall()
@@ -297,7 +288,7 @@ def chooseQuestions(id):
                 if request.form.get(str(listID[0])) == "1":
                     c.execute("insert into qset values(?, ?)", (id, listID[0]))
         except:
-            flash("Duplicate questions will not be added")
+            flash("An error Occured Please try again!")
         conn.commit()
         conn.close()
         return redirect(url_for('viewPaper', id = id))

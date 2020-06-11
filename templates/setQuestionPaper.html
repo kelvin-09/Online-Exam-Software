@@ -33,7 +33,7 @@
             {% for question in questionDetailList %}
             <tr>
                 <td>{{ loop.index }}</td>
-                <td>{{ question[1] }}</td>
+                <td class="largest-width">{{ question[1] }}</td>
                 <td>{{ question[4] }}</td>
                 <td>{{ question[5] }}</td>
                 <td>{{ question[6] }}</td>
@@ -63,7 +63,5 @@
             {% endif %}
         {% endwith %}
 
-        <div id="footer">
-        </div>
     </body>
 </html>

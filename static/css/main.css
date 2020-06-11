@@ -1,14 +1,14 @@
 body, html {
     margin: 0px;
     font-family: sans-serif;
+    width: 100%;
 }
 
 #table {
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
     border-collapse: collapse;
     width: 90%;
-    margin: 40px;
-    margin-top: 20px;
+    margin: 20px auto;
 }
   
 #table td, #table th {
@@ -69,7 +69,7 @@ p{
 }
 
 #footer {
-    position: absolute;
+    position: sticky;
     background-color: #2f2f2f;
     height: 100px;
     width: 100%;
@@ -141,3 +141,14 @@ span{
 #checkbox-cell{
     text-align: center;
 }
+
+.largest-width{
+    max-width: 300px;
+    word-wrap: break-word;
+}
+
+.large-width{
+    max-width: 200px;
+    word-wrap: break-word;
+}
+

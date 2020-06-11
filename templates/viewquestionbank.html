@@ -30,9 +30,9 @@
             <tr>
                 {% set n = n + 1 %}
                 <td>{{ loop.index }}</td>
-                <td>{{ question[1] }}</td>
-                <td>{{ question[2] }}</td>
-                <td>{{ question[3] }}</td>
+                <td class="largest-width">{{ question[1] }}</td>
+                <td class="large-width">{{ question[2] }}</td>
+                <td class="large-width">{{ question[3] }}</td>
                 <td>{{ question[4] }}</td>
                 <td>{{ question[5] }}</td>
                 <td>{{ question[6] }}</td>
@@ -47,8 +47,7 @@
                 <input class = button type="submit" value="Go Back">
             </form>
         </div>
-        <div id="footer">
-        </div>
+
         {% with messages = get_flashed_messages() %}  
          {% if messages %}  
                {% for message in messages %}  

@@ -2,9 +2,14 @@ import sqlite3
 conn = sqlite3.connect("questionBank.db")
 c = conn.cursor()
 
-c.execute("select qid from question")
-for ids in c.fetchall():
-    print(ids[0])
+#from csv import reader
+#opened_file = open('test1.csv')
+#read_file = reader(opened_file)
+#qList = list(read_file)
+#for q in qList:
+#  c.execute('''insert into question (question, keywords, keySentences, marks,
+#          difficulty, topic, subject) values(?, ?, ?, ?, ?, ?, ?)''', tuple(q))
+
 #c.execute('''create table qset(pid integer not null, qid integer not null, 
 #           constraint pk primary key(pid, qid), constraint fk1 foreign key(pid) references questionPaper(pid),
 #           constraint fk2 foreign key(qid) references question(qid))''')
