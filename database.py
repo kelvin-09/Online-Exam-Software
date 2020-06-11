@@ -1,7 +1,16 @@
 import sqlite3
 conn = sqlite3.connect("questionBank.db")
 c = conn.cursor()
-
+c.execute("delete from qset")
+'''c.execute("select qid from qset where pid = ?", 1)
+qIDList = []
+for qList in c.fetchall():
+    qIDList.append(qList[0])
+questionDetailList = []
+for qid in qIDList:
+    c.execute("select * from question where qid = ?", (qid,))
+    questionDetailList.append(c.fetchone())
+print(questionDetailList)'''
 #from csv import reader
 #opened_file = open('test1.csv')
 #read_file = reader(opened_file)

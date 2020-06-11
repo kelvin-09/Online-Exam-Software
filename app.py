@@ -189,6 +189,7 @@ def viewPaper(id):
         c = conn.cursor()
         c.execute("select * from questionPaper where pid = ?", (id,))
         paperDetail = c.fetchall()
+        
         IDtuple = (id,)
         c.execute("select qid from qset where pid = ?", IDtuple)
         qIDList = []
@@ -198,9 +199,11 @@ def viewPaper(id):
         for qid in qIDList:
             c.execute("select * from question where qid = ?", (qid,))
             questionDetailList.append(c.fetchone())
+            
         marks = 0
-        for q in questionDetailList:
-            marks += q[4]
+        if len(questionDetailList) > 0:
+            for q in questionDetailList:
+                marks += q[4]
         conn.close()
         return render_template("setQuestionPaper.html", questionDetailList = questionDetailList, id = id, paperDetail = paperDetail, marks = marks)
 

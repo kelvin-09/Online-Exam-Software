@@ -9,7 +9,7 @@ class questionForm(Form):
     question = TextAreaField("Enter a Question", validators= [InputRequired("Question field is required"), DataRequired()], default="Write a Question...")
     keywords = TextAreaField("Enter keywords(as csv)", validators=[InputRequired("Keywords field is required")])
     keySentences = TextAreaField("Enter key-sentences(as csv)", validators=[InputRequired("Key-sentences field is required")])
-    topic = SelectField("Topic", choices = [('Math', 'Math'), ('Science', 'Science'), ('Computer', 'Computer')])
+    topic = TextField("Topic", validators=[InputRequired("Topic field is required")])
     difficulty = SelectField("Difficulty", choices = [('1', 'Level 1'), ('2', 'Level 2'), ('3', 'Level 3')])
     marks = IntegerField("Marks", validators=[InputRequired("Marks field is required")])
     subject = TextField("Subject", validators=[InputRequired("Subject field is required")])
