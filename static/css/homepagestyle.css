@@ -28,7 +28,7 @@ body{
 #header-title {
     display: block;
     float: left;
-
+    margin-left: 20px;
     font-size: 20px;
     font-weight: bold;
 }
@@ -37,6 +37,7 @@ body{
     display: block;
     float: right;
     margin-top: 0px;
+    margin-right: 20px;
 }
 
 #header-nav li{
@@ -53,6 +54,7 @@ body{
     background-color: #2f2f2f;
     padding: 50px 0;
     height: 100px;
+    margin-bottom: 0;
 }
 
 .column {
@@ -98,13 +100,14 @@ p {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
   }
 .bank-container, .paper-container{
-    position: relative;
-    top: 10px;
-    left: 550px;
+    
+
+
 }
 
 #content{
     width: max-content;
+    margin: auto;
 }
 
 .bank-button:hover{
