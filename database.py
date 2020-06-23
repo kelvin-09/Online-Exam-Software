@@ -1,23 +1,24 @@
 import sqlite3
 conn = sqlite3.connect("questionBank.db")
 c = conn.cursor()
-c.execute("delete from qset")
-'''c.execute("select qid from qset where pid = ?", 1)
-qIDList = []
-for qList in c.fetchall():
-    qIDList.append(qList[0])
-questionDetailList = []
-for qid in qIDList:
-    c.execute("select * from question where qid = ?", (qid,))
-    questionDetailList.append(c.fetchone())
-print(questionDetailList)'''
-#from csv import reader
-#opened_file = open('test1.csv')
-#read_file = reader(opened_file)
-#qList = list(read_file)
-#for q in qList:
-#  c.execute('''insert into question (question, keywords, keySentences, marks,
-#          difficulty, topic, subject) values(?, ?, ?, ?, ?, ?, ?)''', tuple(q))
+
+#c.execute(''' create table teacherDetails(id integer primary key autoincrement,
+#             name text not null, username text not null unique, email text not null unique, password text not null) ''')
+
+
+#c.execute(''' create table answers(aid integer primary key autoincrement, 
+#            sid integer not null, tid integer not null,
+#            qid integer not null, ans text not null, marks real default 0, 
+#            constraint fk1 foreign key(sid) references studentDetails(sid), 
+#            constraint fk2 foreign key(tid) references testSchedule(tid),
+#            constraint fk3 foreign key(qid) references question(qid)) ''')
+
+#c.execute(''' create table studentDetails(sid integer primary key autoincrement,
+#             sname text not null, username text not null unique, email text not null unique, password text not null) ''')
+#
+#c.execute('''create table testSchedule(tid integer primary key autoincrement,
+#            name text not null unique, start text not null, end text not null,
+#             constraint fk foreign key(name) references questionPaper(name))''')
 
 #c.execute('''create table qset(pid integer not null, qid integer not null, 
 #           constraint pk primary key(pid, qid), constraint fk1 foreign key(pid) references questionPaper(pid),

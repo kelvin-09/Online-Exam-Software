@@ -1,0 +1,105 @@
+<html>
+    <head>
+        <title>TEST</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/testPaperStyle.css') }}">
+        {{ ckeditor.load() }}
+        {% block javascript %}
+        <script>
+            var det = JSON.parse( {{testDetail | tojson}} ) 
+            var end = det[0] + (det[1] - det[0])
+            var x = setInterval(function() {
+                now = new Date().getTime();
+                if(end <= det[1])
+                    endTime = end;
+                else
+                    endTime = det[1]
+                var distance = endTime - now;
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                if(minutes == 0 && hours == 0 && days == 0){
+                    document.getElementById("timer").innerHTML = "&#128337;" + seconds + "s ";
+                }
+                else if(hours == 0 && days == 0) {
+                    document.getElementById("timer").innerHTML = "&#128337;" + minutes + "m " + seconds + "s ";
+                }
+                else if (days == 0){
+                    document.getElementById("timer").innerHTML = "&#128337;" + hours + "h " + minutes + "m " + seconds + "s ";
+                }
+                else{
+                    document.getElementById("timer").innerHTML = "&#128337;" + days + "d " + hours + "h "
+                    + minutes + "m " + seconds + "s ";
+                }
+                if (distance < 0) {
+                    clearInterval(x);
+                    document.getElementById("timer").innerHTML = "&#128337" + "EXPIRED";
+                    window.location = "/testpage";
+                    //document.getElementById("finish-button").submit();
+                }
+            }, 1000);
+        </script>
+
+        {% endblock %}
+
+    </head>
+    <body>
+        <div id="header">
+            <div id="paper-detail">
+                <ul id="paper-list">
+                    <li id="paper-name"><span>{{paperDetail[1]}}</span></li>
+                    <li class="paperdet"><span>Max Marks:</span> {{paperDetail[3]}}</li>
+                    <li class="paperdet"><span>Duration:</span> {{paperDetail[2]}} minutes</li>
+                </ul>
+            </div>
+            <div id="timer">
+            </div>
+        </div>
+        <div id="content">
+            <div id="navigation">
+                <div class="vertical-menu">
+                    {% for q in questionDetail %}
+                        {% if loop.index == 1 %}
+                            <a href="/test/question/{{TID}}/{{loop.index - 1}}" class="active">Question {{loop.index}}</a>
+                        {% else %}
+                            <a href="/test/question/{{TID}}/{{loop.index - 1}}">Question {{loop.index}}</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div id="question-answer">
+                <div id="question-number">
+                    <p>Question: {{QID + 1}} of {{questionDetail|length}}</p>
+                </div>
+                <hr>
+                <div id="question">
+                    <p>Q]   {{ questionDetail[QID][0] }} ({{ questionDetail[QID][1] }})</p>
+                </div>
+                <div id="answer">
+                    <form method="post" action="/save/{{TID}}/{{QID}}">
+                        {{ ckeditor.create(value = answerList[QID]) }}
+                        <input class="button save-button"  type="submit" value="Save">
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="footer">
+            <div id="button-group">
+                {% if QID != 0 %}
+                    <form action="/test/question/{{TID}}/{{QID - 1}}" method="POST">
+                        <input class = "button previous-button" type="submit" value="&#8678 Previous">
+                    </form>
+                {% endif %}
+                {% if questionDetail|length == QID + 1  %}
+                    <form id="finish-button" action="/testpage" method="POST">
+                        <input class = "button next-button" type="submit" value="Finish">
+                    </form>
+                {% else %}
+                    <form action="/test/question/{{TID}}/{{QID + 1}}" method="POST">
+                        <input class = "button next-button" type="submit" value="Next &#8680">
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </body>
+</html>

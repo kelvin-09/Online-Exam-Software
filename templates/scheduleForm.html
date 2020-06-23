@@ -1,0 +1,48 @@
+{% from "_formhelpers.html" import render_field %}
+<html>
+    <head>
+        <title>Schedule Test</title>
+        <link rel="stylesheet" type = text/css href="{{ url_for('static', filename='css/style3.css') }}">    
+    </head>
+    <body>
+        <div id = "heading">
+            <h2>Schedule a Test</h2>
+        </div>
+        <dl>
+        </dl>
+        <div id = "qpform">
+            <form action = "/schedule" method="post">
+                {{ form.hidden_tag() }}
+                    <div id="name" class = "form-element">
+                        <span class="label"> {{ form.testName.label }} </span> <br>
+                        {{ form.testName}}
+                        {{ render_field(form.testName) }}
+                    </div>
+                    <br>
+                    <div id="duration" class = "form-element">
+                        <span class="label"> {{ form.start.label }} </span> <br>
+                        {{ form.start}}
+                        {{ render_field(form.start) }}
+                    </div>
+                    <br>
+                    <div id="duration" class = "form-element">
+                        <span class="label"> {{ form.end.label }} </span> <br>
+                        {{ form.end}}
+                        {{ render_field(form.end) }}
+                    </div>
+                    <br>
+                    <div id="submit" class = "form-element">
+                        {{ form.submit}}
+                    </div>
+                    <br>
+            </form>
+        </div>
+        {% with messages = get_flashed_messages() %}  
+         {% if messages %}  
+               {% for message in messages %}  
+                    <p>{{ message }}</p>  
+               {% endfor %}  
+         {% endif %}  
+        {% endwith %}  
+    </body>
+</html>

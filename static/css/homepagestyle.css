@@ -81,7 +81,7 @@ p {
     line-height: 1.5;
 }
 
-.bank-button, .paper-button {
+.bank-button, .paper-button, .schedule-button, .result-button{
     background-color: white;
     border: 2px solid #555555;
     padding: 32px 16px;
@@ -99,15 +99,13 @@ p {
     transition-duration: 0.4s;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
   }
-.bank-container, .paper-container{
-    
-
-
-}
 
 #content{
-    width: max-content;
+    width: 100%;
     margin: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .bank-button:hover{
@@ -120,4 +118,20 @@ p {
     background-color: #008CBA;
     color: white;
     width: 400px;
+}
+
+.schedule-button:hover{
+    background-color: #008CBA;
+    color: white;
+    width: 400px;
+}
+
+.result-button:hover{
+    background-color: #008CBA;
+    color: white;
+    width: 400px;
+}
+
+.left-container, .right-container{
+    text-align: center;
 }

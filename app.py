@@ -1,13 +1,22 @@
-from flask import Flask, render_template, url_for, request, flash, redirect
+from flask import Flask, render_template, url_for, request, flash, redirect, session, json, Response
 from forms import questionForm
-from forms import paperForm
+from forms import paperForm, scheduleForm
 from flask_wtf import Form
+from flask_ckeditor import CKEditor
 from wtforms import validators, ValidationError
 from wtforms.validators import InputRequired
 import sqlite3
 import random
+import re
+import datetime
+from camera import VideoCamera
+import numpy as np
+import os
+import cv2
+import cameratest
 app = Flask(__name__)
 
+ckeditor = CKEditor(app)
 app.secret_key = 'Secret'
 
 @app.route('/createQuestion', methods = ['GET', 'POST'])
@@ -169,6 +178,7 @@ def deletePaper(id):
     c = conn.cursor()
     IDtuple = (id,) #(value, ) is a tuple while (value) is not a tuple
     try:
+        c.execute("delete from testSchedule where name in (select name from questionPaper where id = ?)", IDtuple)
         c.execute("delete from questionPaper where pid = ?", IDtuple)
         c.execute("delete from qset where pid = ?", IDtuple)
     except:
@@ -177,9 +187,6 @@ def deletePaper(id):
     conn.close()
     return redirect('/questionpaper')
 
-@app.route('/')
-def homepage():
-    return render_template('homepage.html')
 
 
 @app.route('/view/paper/<int:id>', methods = ['GET', 'POST'])
@@ -296,6 +303,342 @@ def chooseQuestions(id):
         conn.close()
         return redirect(url_for('viewPaper', id = id))
 
+@app.route('/schedule', methods = ['GET', "POST"])
+def schedule():
+    form = scheduleForm()
+    conn = sqlite3.connect("questionBank.db")
+    c = conn.cursor()
+    if request.method == 'POST':
+        testList = []
+        testList.append(form.testName.data)
+        testList.append(form.start.data)
+        testList.append(form.end.data)
+        testTuple = tuple(testList)
+        try:
+            c.execute('''insert into testSchedule(name, start, end) values(?, ?, ?)''', testTuple)
+        except:
+            flash("")
+        conn.commit()
+        c.execute("select * from testSchedule")
+        testLists = c.fetchall()
+        tempList = []
+        for test in testLists:
+            temp = []
+            temp.append(test[0])
+            temp.append(test[1])
+            temp.append(datetime.datetime.strptime(test[2], '%Y-%m-%d %H:%M:%S').strftime("%d %b, %Y      %H:%M %p"))
+            temp.append(datetime.datetime.strptime(test[3], '%Y-%m-%d %H:%M:%S').strftime("%d %b, %Y      %H:%M %p"))
+            tempList.append(temp)
+        testLists = tempList
+        conn.close()
+        return render_template('scheduleTest.html', testLists = testLists)
+    else:
+        c.execute("select * from testSchedule")
+        testLists = c.fetchall()
+        tempList = []
+        for test in testLists:
+            temp = []
+            temp.append(test[0])
+            temp.append(test[1])
+            temp.append(datetime.datetime.strptime(test[2], '%Y-%m-%d %H:%M:%S').strftime("%d %b, %Y      %H:%M %p"))
+            temp.append(datetime.datetime.strptime(test[3], '%Y-%m-%d %H:%M:%S').strftime("%d %b, %Y      %H:%M %p"))
+            tempList.append(temp)
+        testLists = tempList
+        conn.close()
+        return render_template('scheduleTest.html', testLists = testLists)
+
+
+@app.route('/scheduleTest', methods = ['GET', 'POST'])
+def scheduleTest():
+    form = scheduleForm()
+    conn = sqlite3.connect("questionBank.db")
+    c = conn.cursor()
+    c.execute('select name from questionPaper where name not in (select name from testSchedule)')
+    testList = []
+    for test in c.fetchall():
+        testList.append((test[0], test[0]))
+    form.testName.choices = testList
+    if len(testList) < 1:
+        flash("No tests left to schedule")
+    conn.close()
+    return render_template('scheduleForm.html', form = form)
+
+
+@app.route('/delete/schedule/<int:id>')
+def deleteSchedule(id):
+    conn = sqlite3.connect("questionBank.db")
+    c = conn.cursor()
+    IDtuple = (id,)
+    try:
+        c.execute("delete from testSchedule where tid = ?", IDtuple)
+    except:
+            flash("An error occured please try again")
+    conn.commit()
+    conn.close()
+    return redirect('/schedule')
+
+@app.route('/testpage', methods = ['GET', 'POST'])
+def testpage():
+    #cameratest.breakLoop = True
+    conn = sqlite3.connect("questionBank.db")
+    c = conn.cursor()
+    c.execute("select * from testSchedule")
+    testList = c.fetchall()
+    tempList = []
+    for test in testList:
+        temp = []
+        temp.append(test[0])
+        temp.append(test[1])
+        temp.append(datetime.datetime.strptime(test[2], '%Y-%m-%d %H:%M:%S').strftime("%d %b, %Y      %H:%M %p"))
+        temp.append(datetime.datetime.strptime(test[3], '%Y-%m-%d %H:%M:%S').strftime("%d %b, %Y      %H:%M %p"))
+        tempList.append(temp)
+    testList = tempList
+    newtestList = []
+    for test in testList:
+        test = list(test)
+        c.execute('''select pid from questionPaper where name = ?''', (test[1], ))
+        a = c.fetchall()
+        c.execute(''' select count(*) from qset where pid = ?''', (a[0][0], ))
+        a = c.fetchall()
+        test.append(a[0][0])
+        c.execute("select duration from questionPaper where name = ?", (test[1], ))
+        a = c.fetchall()
+        test.append(a[0][0])
+        newtestList.append(test)
+    testList = newtestList
+    conn.close()
+    return render_template('studentTest.html', testList = testList)
+
+@app.route('/test/<int:id>', methods = ['GET', 'POST'])
+def test(id):
+    if request.method == 'POST':
+        conn = sqlite3.connect("questionBank.db")
+        c = conn.cursor()
+        c.execute("select start, end from testSchedule where tid = ?", (id, ))
+        temp = c.fetchall()
+        startTime = datetime.datetime.strptime(temp[0][0], '%Y-%m-%d %H:%M:%S')
+        endTime = datetime.datetime.strptime(temp[0][1], '%Y-%m-%d %H:%M:%S')
+        currTime = datetime.datetime.now()
+        if currTime >= startTime and currTime <= endTime:
+            #cameratest.breakLoop = False
+            #cameratest.record()
+            return redirect(url_for('testhome', QID = 0, TID = id))
+        else:
+            flash("The Test has not started or it has expired.")
+            return redirect(url_for('testpage'))
+        
+
+@app.route('/test/question/<int:TID>/<int:QID>', methods = ['GET', 'POST'])
+def testhome(TID, QID):
+    conn = sqlite3.connect("questionBank.db")
+    c = conn.cursor()
+    answerList = []
+    sid = 2
+    c.execute("select start, end from testSchedule where tid = ?", (TID, ))
+    testDetails = c.fetchall()[0]
+    c.execute('''select * from questionPaper where 
+            name = (select name from testSchedule where tid = ?)''', (TID, ))
+    paperDetail = c.fetchall()[0]
+    c.execute(''' select qid from qset where pid = ?''', (paperDetail[0], ))
+    Qid = []
+    for q in c.fetchall():
+        Qid.append(q[0])
+    for id in Qid:
+        c.execute("select ans from answers where sid = ? and tid = ? and qid = ?", (sid, TID, id))
+        temp = c.fetchall()
+        if temp:
+            answerList.append(temp[0][0])
+        else:
+            answerList.append("Write your answer here...")
+    Qid = tuple(Qid)
+    questionDetail = []
+    for id in Qid:
+        c.execute(''' select question, marks from question where qid = ? ''', (id, ))
+        questionDetail.append(c.fetchall()[0])
+    if questionDetail == []:
+        flash("No questions in this test")
+        return redirect(url_for('testpage'))
+    else:
+        startTime = datetime.datetime.strptime(testDetails[0], '%Y-%m-%d %H:%M:%S')
+        endTime = datetime.datetime.strptime(testDetails[1], '%Y-%m-%d %H:%M:%S')
+        testDetails = list(testDetails)
+        testDetails[0] = startTime.timestamp() * 1000
+        testDetails[1] = endTime.timestamp() * 1000
+        testDetail = json.dumps(testDetails)
+        conn.close()
+        return render_template('testPaper.html', QID = QID, paperDetail = paperDetail, questionDetail = questionDetail, TID = TID, answerList = answerList, testDetail = testDetail)    
+    
+
+@app.route('/save/<int:TID>/<int:QID>', methods = ['GET', 'POST'])
+def save(TID, QID):
+    conn = sqlite3.connect("questionBank.db")
+    c = conn.cursor()
+    #sid = session['id']
+    sid = 2
+    answerList = []
+    c.execute("select start, end from testSchedule where tid = ?", (TID, ))
+    testDetails = c.fetchall()[0]
+    c.execute('''select * from questionPaper where 
+            name = (select name from testSchedule where tid = ?)''', (TID, ))
+    paperDetail = c.fetchall()[0]
+    c.execute(''' select qid from qset where pid = ?''', (paperDetail[0], ))
+    Qid = []
+    for q in c.fetchall():
+        Qid.append(q[0])
+    Qid = tuple(Qid)
+    questionDetail = []
+    for id in Qid:
+        c.execute(''' select question, marks from question where qid = ? ''', (id, ))
+        questionDetail.append(c.fetchall()[0])
+    answer = request.form.get('ckeditor')
+    c.execute("select ans from answers where sid = ? and tid = ? and qid = ?", (sid, TID, Qid[QID]))
+    if c.fetchall():
+        c.execute("update answers set ans = ? where sid = ? and tid = ? and qid = ?", (answer, sid, TID, Qid[QID]))
+    else:
+        c.execute(''' insert into answers (sid, tid, qid, ans, marks) 
+        values(?, ?, ?, ?, ?) ''', (sid, TID, Qid[QID], answer, questionDetail[QID][1]))
+    conn.commit()
+    for id in Qid:
+        c.execute("select ans from answers where sid = ? and tid = ? and qid = ?", (sid, TID, id))
+        temp = c.fetchall()
+        if temp:
+            answerList.append(temp[0][0])
+        else:
+            answerList.append("Write your answer here...")
+    startTime = datetime.datetime.strptime(testDetails[0], '%Y-%m-%d %H:%M:%S')
+    endTime = datetime.datetime.strptime(testDetails[1], '%Y-%m-%d %H:%M:%S')
+    testDetails = list(testDetails)
+    testDetails[0] = startTime.timestamp() * 1000
+    testDetails[1] = endTime.timestamp() * 1000
+    testDetail = json.dumps(testDetails)
+    conn.close()
+    return render_template('testPaper.html', QID = QID, paperDetail = paperDetail, questionDetail = questionDetail, TID = TID, answerList = answerList, testDetail = testDetail) 
+
+
+@app.route('/', methods = ['GET', 'POST'])
+def home():
+    return render_template('base.html')
+
+@app.route('/loginStudent', methods = ['GET', 'POST'])
+def loginStudent():
+    msg = ''
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
+        username = request.form['username']
+        password = request.form['password']
+        conn = sqlite3.connect("questionBank.db")
+        c = conn.cursor()
+        c.execute('SELECT * FROM studentDetails WHERE username = ? AND password = ?', (username, password,))
+        account = c.fetchone()
+        conn.close()
+        if account:
+            session['loggedin'] = True
+            session['id'] = account[0]
+            session['username'] = account[2]
+            return redirect(url_for('testpage'))
+        else:
+            msg = 'Incorrect username/password!'
+    return render_template('loginStudentPage.html', msg=msg)
+
+
+@app.route('/loginTeacher', methods = ['GET', 'POST'])
+def loginTeacher():
+    msg = ''
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
+        username = request.form['username']
+        password = request.form['password']
+        conn = sqlite3.connect("questionBank.db")
+        c = conn.cursor()
+        c.execute('SELECT * FROM teacherDetails WHERE username = ? AND password = ?', (username, password,))
+        account = c.fetchone()
+        conn.close()
+        if account:
+            session['loggedin'] = True
+            session['id'] = account[0]
+            session['username'] = account[2]
+            return render_template('homepage.html')
+        else:
+            msg = 'Incorrect username/password!'
+    return render_template('loginTeacherPage.html', msg=msg)
+
+
+@app.route('/logout', methods = ['GET', 'POST'])
+def logout():
+   session.pop('loggedin', None)
+   session.pop('id', None)
+   session.pop('username', None)
+   return render_template('base.html')
+
+@app.route('/registerTeacher', methods = ['GET', 'POST'])
+def registerTeacher():
+    msg = ''
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
+        name = request.form['name']
+        username = request.form['username']
+        password = request.form['password']
+        email = request.form['email']
+        conn = sqlite3.connect("questionBank.db")
+        c = conn.cursor()
+        c.execute('SELECT * FROM teacherDetails WHERE username = ?', (username,))
+        account = c.fetchone()
+        if account:
+            msg = 'Account already exists!'
+        elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+            msg = 'Invalid email address!'
+        elif not re.match(r'[A-Za-z0-9]+', username):
+            msg = 'Username must contain only characters and numbers!'
+        elif not username or not password or not email:
+            msg = 'Please fill out the form!'
+        else:
+            c.execute('INSERT INTO teacherDetails (name, username, email, password) values (?, ?, ?, ?)', (name, username, email, password))
+            conn.commit()
+            msg = 'You have successfully registered!'
+    elif request.method == 'POST':
+        msg = 'Please fill out the form!'
+    return render_template('registerTeacherPage.html', msg=msg)
+
+@app.route('/registerStudent', methods = ['GET', 'POST'])
+def registerStudent():
+    msg = ''
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
+        name = request.form['name']
+        username = request.form['username']
+        password = request.form['password']
+        email = request.form['email']
+        conn = sqlite3.connect("questionBank.db")
+        c = conn.cursor()
+        c.execute('SELECT * FROM studentDetails WHERE username = ?', (username,))
+        account = c.fetchone()
+        if account:
+            msg = 'Account already exists!'
+        elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+            msg = 'Invalid email address!'
+        elif not re.match(r'[A-Za-z0-9]+', username):
+            msg = 'Username must contain only characters and numbers!'
+        elif not username or not password or not email:
+            msg = 'Please fill out the form!'
+        else:
+            c.execute('INSERT INTO studentDetails (sname, username, email, password) values (?, ?, ?, ?)', (name, username, email, password))
+            conn.commit()
+            msg = 'You have successfully registered!'
+    elif request.method == 'POST':
+        msg = 'Please fill out the form!'
+    return render_template('registerStudentPage.html', msg=msg)
+
+@app.route('/studentHome', methods = ['GET', 'POST'])
+def studentHome():
+    return render_template("")
+
+@app.route('/teacherHome', methods = ['GET', 'POST'])
+def teacherHome():
+    return render_template('homepage.html')
+
+
+@app.route('/recording')
+def index():
+    return cameratest.record()
+
+
+    
 
 if __name__ == '__main__':
     app.run(debug=True)

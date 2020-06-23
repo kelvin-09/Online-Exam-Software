@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <title>Home</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/baseStyle.css') }}">
+    </head>
+    <body>
+        <div id="link-group">
+            <div id="student-link">
+                <form method="POST" action="/loginStudent">
+                    <input class="button button1" type="submit" value="I am a Student">
+                </form>
+            </div>
+            <div id="teacher-link">
+                <form method="POST" action="/loginTeacher">
+                    <input class="button button1" type="submit" value="I am a Teacher">
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

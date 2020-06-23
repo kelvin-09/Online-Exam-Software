@@ -4,6 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import TextField, IntegerField, SubmitField, TextAreaField, SelectField, RadioField, FieldList, FormField
 from wtforms import validators, ValidationError
 from wtforms.validators import InputRequired, DataRequired
+from wtforms.fields.html5 import DateField, TimeField, DateTimeLocalField
 
 class questionForm(Form):
     question = TextAreaField("Enter a Question", validators= [InputRequired("Question field is required"), DataRequired()], default="Write a Question...")
@@ -20,3 +21,9 @@ class paperForm(Form):
     name = TextField("Enter question paper name", validators=[InputRequired()])
     duration = IntegerField("Duration of the paper (in minutes)", validators=[InputRequired()])
     submit = SubmitField("Submit")
+
+class scheduleForm(Form):
+    testName = SelectField("Choose a Test", choices = [])
+    start = DateTimeLocalField("Schedule Start Date and Time", format='%Y-%m-%dT%H:%M', validators=[InputRequired()])
+    end = DateTimeLocalField("Schedule End Date and Time", format='%Y-%m-%dT%H:%M', validators=[InputRequired()])
+    submit = SubmitField("Save")

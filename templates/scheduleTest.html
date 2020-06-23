@@ -1,44 +1,42 @@
 <html>
     <head>
-        <title>Question Papers</title>
+        <title>Schedules</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     </head>
     <body>
         <div id="header">
             <div class="container">
                 <a id="header-title" href="/teacherHome">Online Exam</a>
-                <h1>QUESTION PAPERS</h1>
+                <h1>Schedule a Test</h1>
                 <a href="/logout" id = "logout"> Log Out </a>
             </div>
         </div>
-        {%  if questionPaperLists|length < 1 %}
-        <h4 style="text-align: center">There are no question papers. Create one below!</h4>
+        {%  if testLists|length < 1 %}
+        <h4 style="text-align: center">There are no Tests Scheduled. Create one below!</h4>
         {%  else %}
         <table id = "table">
             <tr>
                 <th>Serial No.</th>
-                <th>Name</th>
-                <th>Duration(min)</th>
-                <th>Max-marks</th>
-                <th>View</th>
+                <th>Test Name</th>
+                <th>Start Time</th>
+                <th>End Time</th>
                 <th>Delete</th>
             </tr>
-                {% for paper in questionPaperLists %}
+                {% for test in testLists %}
             <tr>
                 <td>{{ loop.index }}</td>
-                <td>{{ paper[1] }}</td>
-                <td>{{ paper[2] }}</td>
-                <td> {{ paper[3] }} </td>
-                <td><a href="/view/paper/{{paper[0]}}">View</a></td>
-                <td><a href="/delete/paper/{{paper[0]}}">Delete</a></td>
+                <td>{{ test[1] }}</td>
+                <td>{{ test[2] }}</td>
+                <td> {{ test[3] }} </td>
+                <td><a href="/delete/schedule/{{test[0]}}">Delete</a></td>
             </tr>
                 {% endfor %}
         </table>
         {%  endif %}
 
         <div class="form">
-            <form action="/createPaper" method="POST">
-                <input class = "button" type="submit" value="Add Question Paper">
+            <form action="/scheduleTest" method="POST">
+                <input class = "button" type="submit" value="ADD">
             </form>
         </div>
         {% with messages = get_flashed_messages() %}  

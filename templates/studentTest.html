@@ -1,0 +1,51 @@
+<html>
+    <head>
+        <title>Schedules</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/testPage.css') }}">
+    </head>
+    <body>
+        <div id="header">
+            <div class="topcontainer">
+                <a id="header-title" href="/testpage">Online Exam</a>
+                <h1>MY TESTS</h1>
+                <a href="/logout" id = "logout"> Log Out </a>
+            </div>
+        </div>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <h3>{{ message }}</h3>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {%  if testList|length < 1 %}
+        <h4 style="text-align: center">No Exam is available at this moment</h4>
+        {%  else %}
+         <div class = flex-container>
+             {% for test in testList  %}
+            <div class="card">
+                <div class="container">
+                    <div class="text-heading">
+                        <h4>{{ test[1] }}</h4>
+                    </div>
+                  <ul>
+                      <li><span>Start:</span> {{ test[2] }}</li>
+                      <li><span>End:</span> {{ test[3] }}</li>
+                      <li><span>No. of Questions:</span> {{ test[4] }}</li>
+                      <li><span>Exam Duration:</span> {{ test[5] }} Minutes</li>
+                      <li><span>Time Remaining:</span> {{ 0 }}</li>
+                  </ul>
+                    <div class="form">
+                        <form action="/test/{{test[0]}}" method="POST">
+                            <input class = button type="submit" value="Proceed">
+                        </form>
+                    </div>
+                </div>
+            </div>
+             {% endfor %}
+         </div>
+        {%  endif %}
+
+
+    </body>
+</html>
